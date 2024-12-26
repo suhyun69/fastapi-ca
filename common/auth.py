@@ -5,9 +5,11 @@ from enum import StrEnum
 from dataclasses import dataclass
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
+from config import get_settings
 
+settings = get_settings()
 
-SECRET_KEY = "THIS_IS_SUPER_SECRET_KEY"
+SECRET_KEY = settings.jwt_secret
 ALGORITHM = "HS256"
 
 class Role(StrEnum):
