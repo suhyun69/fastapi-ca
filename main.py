@@ -5,9 +5,14 @@ from user.interface.controllers.user_controller import router as user_router
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
+from containers import Container
 
 app = FastAPI()
 app.include_router(user_router)
+
+container = Container()
+container.wire(modules=[__name__])
+app.container = container
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
@@ -24,4 +29,4 @@ def hello():
     return {"Hello": "FastAPI"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
