@@ -5,7 +5,8 @@ from user.infra.repository.user_repo import UserRepository
 from fastapi import HTTPException
 from utils.crypto import Crypto
 from dependency_injector.wiring import Provide, inject
-
+from fastapi import status
+from common.auth import Role, create_access_token
 
 class UserService:
     @inject
@@ -69,3 +70,16 @@ class UserService:
     
     def delete_user(self, user_id: str):
         self.user_repo.delete(user_id)
+
+    def login(self, email: str, password: str):
+        user = self.user_repo.find_by_email(email)
+        
+        if not self.crypto.verify(password, user.password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        
+        access_token = create_access_token(
+            payload = {"user_id": user.id},
+            role=Role.USER
+        )
+        
+        return access_token
